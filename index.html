@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GitHub Search</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <div class="container">
-            <input type="text" class="container__input">
-            <div class="container-list">
-            </div>
+      <form action="">
+        <input type="text" class="container__input" autocomplete="off" />
+        <div class="contRes"></div>
+      </form>
+      <div class="container-list"></div>
     </div>
     <script src="index.js"></script>
-</body>
+    <script src="autocomplete.js"></script>
+  </body>
 </html>

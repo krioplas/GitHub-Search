@@ -1,6 +1,77 @@
 const containerInput = document.querySelector('.container__input')
 const container = document.querySelector('.container')
 const containerList = document.querySelector('.container-list')
+const contRes = document.querySelector('.contRes')
+let searchText
+
+function debounce(callee, timeoutMs) {
+    return function perform(...args) {
+        let previousCall = this.lastCall
+        this.lastCall = Date.now()
+        if (previousCall && this.lastCall - previousCall <= timeoutMs) {
+            clearTimeout(this.lastCallTimer)
+        }
+        this.lastCallTimer = setTimeout(() => callee(...args), timeoutMs)
+    }
+}
+
+function rest() {
+    searchText = containerInput.value
+    if (searchText.length === 0) {
+        contRes.innerHTML = ''
+        return
+    }
+    contRes.innerHTML = ''
+    getGitHub(`https://api.github.com/search/repositories?q=${searchText}&per_page=30`)
+}
+
+
+
+containerInput.addEventListener('input', debounce(rest, 500))
+
+// contRes.querySelectorAll('.listName').forEach(item => {
+//     item.addEventListener('click', () => {
+//         console.log('fsdfsdf');
+//     });
+// });
+
+function listRepo(objRes) { // вывод в лист
+    let count = 0;
+    objRes.forEach(element => {
+        if (count < 5) {
+            let li = document.createElement('li')
+            li.classList.add('listName')
+            li.textContent = element.name
+            li.setAttribute('data-owner', element.owner.login)
+            li.setAttribute('data-stars', element.watchers)
+            contRes.appendChild(li)
+        }
+        count++;
+    })
+    contRes.querySelectorAll('.listName').forEach(item => {
+        item.addEventListener('click', () => {
+            containerInput.value = ''
+            contRes.innerHTML = ''
+            addReposList(item.textContent, item.getAttribute('data-owner'), item.getAttribute('data-stars'))
+        });
+
+    });
+}
+
+
+
+async function getGitHub(url) {  // функция запроса на сервер
+    try {
+        const response = await fetch(url)
+        const json = await response.json()
+        let objRes = json.items
+        console.log(`запрос на gitHub`);
+        listRepo(objRes)
+    }
+    catch (err) {
+        document.write(err);
+    }
+}
 
 function addReposList(name, owner, stars) {
     let cont = document.createDocumentFragment()
@@ -23,38 +94,11 @@ function addReposList(name, owner, stars) {
     elem.appendChild(buttonDelete)
     cont.appendChild(elem)
     containerList.appendChild(cont)
-}
-
-function fetchGitHub(text) {
-    return fetch(`https://api.github.com/search/repositories?q=${text}&per_page=5`)
-        .then(response => response.json())
-
+    buttonDelete.addEventListener('click', e => {
+        elem.remove()
+    })
 }
 
 
-containerInput.addEventListener('input', (event) => {
-    text = containerInput.value
-    if (text.length > 3) {
-        fetchGitHub(text).then(repo => {
-            let arrRepo = repo.items;
-            for (let i = 0; i <= arrRepo.length; i++) {
-                addReposList(arrRepo[i].name, arrRepo[i].owner.login, arrRepo[i].stargazers_count)
-                console.log(arrRepo[i]);
-            }
-        })
-    }
-
-})
-
-
-// const debounce = (fn, debounceTime) => {
-//     let timer;
-//   return function(...argum){
-//       clearTimeout(timer);
-//       timer = setTimeout(() => {
-//         fn.apply(this, argum);
-//       },debounceTime)
-//   }
-// };
-
-
+// element.name[0] === text[0]
+ // containerInput.insertAdjacentHTML('afterend', `<li class="listName">${element.name}</li>`)
