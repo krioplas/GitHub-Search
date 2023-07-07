@@ -21,12 +21,9 @@ function rest(e) {
         contRes.textContent = ''
         return
     }
-    contRes.innerHTML = ''
+    contRes.textContent = ''
     getGitHub(`https://api.github.com/search/repositories?q=${searchText}&per_page=5`)
 }
-
-
-
 containerInput.addEventListener('input', debounce(rest, 500))
 
 function listRepo(objRes) { // вывод в лист
@@ -42,7 +39,6 @@ function listRepo(objRes) { // вывод в лист
 
         }
         count++;
-
     })
 }
 contRes.addEventListener('click', (e) => {
