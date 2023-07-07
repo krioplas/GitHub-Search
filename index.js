@@ -15,25 +15,19 @@ function debounce(callee, timeoutMs) {
     }
 }
 
-function rest() {
-    searchText = containerInput.value
+function rest(e) {
+    searchText = e.target.value
     if (searchText.length === 0) {
-        contRes.innerHTML = ''
+        contRes.textContent = ''
         return
     }
     contRes.innerHTML = ''
-    getGitHub(`https://api.github.com/search/repositories?q=${searchText}&per_page=30`)
+    getGitHub(`https://api.github.com/search/repositories?q=${searchText}&per_page=5`)
 }
 
 
 
 containerInput.addEventListener('input', debounce(rest, 500))
-
-// contRes.querySelectorAll('.listName').forEach(item => {
-//     item.addEventListener('click', () => {
-//         console.log('fsdfsdf');
-//     });
-// });
 
 function listRepo(objRes) { // вывод в лист
     let count = 0;
@@ -45,27 +39,23 @@ function listRepo(objRes) { // вывод в лист
             li.setAttribute('data-owner', element.owner.login)
             li.setAttribute('data-stars', element.watchers)
             contRes.appendChild(li)
+
         }
         count++;
+
     })
-    contRes.querySelectorAll('.listName').forEach(item => {
-        item.addEventListener('click', () => {
-            containerInput.value = ''
-            contRes.innerHTML = ''
-            addReposList(item.textContent, item.getAttribute('data-owner'), item.getAttribute('data-stars'))
-        });
-
-    });
 }
-
-
+contRes.addEventListener('click', (e) => {
+    addReposList(e.target.textContent, e.target.getAttribute('data-owner'), e.target.getAttribute('data-stars'))
+    containerInput.value = ''
+    contRes.textContent = ''
+});
 
 async function getGitHub(url) {  // функция запроса на сервер
     try {
         const response = await fetch(url)
         const json = await response.json()
         let objRes = json.items
-        console.log(`запрос на gitHub`);
         listRepo(objRes)
     }
     catch (err) {
@@ -95,10 +85,7 @@ function addReposList(name, owner, stars) {
     cont.appendChild(elem)
     containerList.appendChild(cont)
     buttonDelete.addEventListener('click', e => {
-        elem.remove()
+        e.target.closest('div').remove()
     })
 }
 
-
-// element.name[0] === text[0]
- // containerInput.insertAdjacentHTML('afterend', `<li class="listName">${element.name}</li>`)
